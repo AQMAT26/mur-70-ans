@@ -145,12 +145,15 @@
     border-radius:50%;cursor:pointer;font-size:15px;flex:none}
 
   .ba{position:relative;height:250px;overflow:hidden;user-select:none;touch-action:none;cursor:ew-resize}
+
+
+
   @media (max-width:640px){ .ba{height:190px} }
   .ba .present{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     background:linear-gradient(135deg,var(--petrole),var(--petrole-cl))}
   .ba .present span,.ba .past span{font-family:var(--ui);font-size:11.5px;letter-spacing:.08em;color:rgba(246,242,233,.88)}
   .ba .clip{position:absolute;top:0;bottom:0;left:0;overflow:hidden}
-  .ba .past{position:absolute;top:0;bottom:0;left:0;width:680px;max-width:96vw;
+  .ba .past{position:absolute;top:0;bottom:0;left:0;width:100%;;max-width:96vw;
     background:repeating-linear-gradient(45deg,#8A7657 0 10px,#7C6A4D 10px 20px);
     display:flex;align-items:center;justify-content:center}
   .ba .handle{position:absolute;top:0;bottom:0;width:3px;background:var(--blanc);z-index:3}
@@ -159,6 +162,8 @@
     display:flex;align-items:center;justify-content:center;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.25)}
   .ba .tag{position:absolute;bottom:10px;padding:4px 9px;font-family:var(--ui);font-size:10px;
     letter-spacing:.14em;text-transform:uppercase;font-weight:700;background:rgba(0,0,0,.45);color:#fff}
+
+
 
   .fiche-body{padding:20px 22px 12px}
   .fiche-body .hint{color:var(--gris);font-size:14px;margin:0 0 18px}
@@ -254,15 +259,32 @@
       </div>
       <button id="fClose" aria-label="Fermer la fiche">✕</button>
     </div>
-    <div class="ba" id="ba">
+    <!--<div class="ba" id="ba">
       <div class="present"><span>[ photo actuelle — fournie par l’entreprise ]</span></div>
       <div class="clip" id="baClip">
         <div class="past"><span>[ photo d’archives · <span id="baYear"></span> ]</span></div>
-      </div>
-      <div class="handle" id="baHandle"></div>
+      </div>-->
+      <div class="ba" id="ba">
+  <!-- Image d’hier -->
+  <img id="baImg1" class="past" src="" alt="Photo d’hier">
+
+  <!-- Clip contenant l’image d’aujourd’hui -->
+  <div id="baClip" class="clip">
+    <img id="baImg2" class="present" src="" alt="Photo d’aujourd’hui">
+  </div>
+
+  <!-- Curseur -->
+  <div id="baHandle" class="handle"></div>
+
+  <!-- Tags -->
+  <span class="tag" style="left:10px">Hier</span>
+  <span class="tag" style="right:10px">Aujourd’hui</span>
+</div>
+    <!--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
+       <!--<div class="handle" id="baHandle"></div>
       <span class="tag" style="left:10px">Hier</span>
       <span class="tag" style="right:10px">Aujourd’hui</span>
-    </div>
+    </div>-->
     <div class="fiche-body">
       <p class="hint">Glissez le curseur pour voir la devanture (ou l’usine) d’hier se transformer en celle d’aujourd’hui.</p>
       <div class="stats">
@@ -303,7 +325,13 @@
    ========================================================================= */
 
 const DATA = [
-  {n:"Pierre Naud inc.",                   y:1890, cat:"Marchand"},
+  {
+  n:"Pierre Naud inc.",
+  y:1890,
+  cat:"Marchand",
+  imgHier:"images/01.jpg",
+  imgAuj:"images/02.jpeg"
+},
   {n:"Langevin Forest",                    y:1917, cat:"Marchand"},
   {n:"BMR Quincaillerie J.R. Grégoire",    y:1920, cat:"Marchand"},
   {n:"Potvin & Bouchard",                  y:1932, cat:"Marchand"},
@@ -460,28 +488,45 @@ chipDec.addEventListener('click', ()=>{ decActive = ""; renderGrid(); });
 renderGrid();
 
 // --- fiche (modale) ---
-const overlay  = document.getElementById('overlay');
+/*const overlay  = document.getElementById('overlay');
 const ba       = document.getElementById('ba');
 const baClip   = document.getElementById('baClip');
 const baHandle = document.getElementById('baHandle');
+let dragging = false;*/
+
+const overlay = document.getElementById('overlay');
+const ba = document.getElementById('ba');
+const baClip = document.getElementById('baClip');
+const baHandle = document.getElementById('baHandle');
+const baImg1 = document.getElementById('baImg1');
+const baImg2 = document.getElementById('baImg2');
 let dragging = false;
 
 function openFiche(d){
   selected = d;
+
   document.getElementById('ficheCat').textContent  = d.cat;
   document.getElementById('fName').textContent     = d.n;
   document.getElementById('ficheDec').textContent  = 'Décennie ' + decade(d.y);
-  document.getElementById('baYear').textContent    = d.y;
+
+  /*document.getElementById('baYear').textContent    = d.y;*/
   document.getElementById('sYear').textContent     = d.y;
   document.getElementById('sAge').textContent      = NOW - d.y;
   document.getElementById('sDec').textContent      = decade(d.y);
   document.getElementById('rY1').textContent       = d.y;
+
   document.getElementById('fQuote').textContent    = '« ' + QUOTES[d.y % QUOTES.length] + ' »';
+
+  baImg1.src = d.imgHier || '';
+  baImg2.src = d.imgAuj || '';
+
   setSliderPos(0.5);
   updatePos();
+
   overlay.classList.add('open');
   document.getElementById('fClose').focus();
 }
+/*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
 function updatePos(){
   const idx = currentList.findIndex(d => d.n === selected.n);
   const txt = (idx>=0 ? idx+1 : 1) + ' / ' + (currentList.length || 1);
