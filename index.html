@@ -146,7 +146,14 @@
 
   .ba{position:relative;height:250px;overflow:hidden;user-select:none;touch-action:none;cursor:ew-resize}
 
-
+.ba img {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
   @media (max-width:640px){ .ba{height:190px} }
   .ba .present{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
